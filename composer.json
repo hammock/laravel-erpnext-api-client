@@ -1,0 +1,32 @@
+{
+    "name": "hammock/laravel-erpnext-api-client",
+    "description": "A simple client to integrate ERPNext with Laravel 5.",
+    "keywords": ["laravel", "api", "erpnext"],
+    "homepage": "https://github.com/hammock/laravel-erpnext-api-client",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aleksandr Ivanov",
+            "email": "a.ivanov@gpsolutions.com"
+        }
+    ],
+    "require": {
+        "php" : "^7.0",
+        "laravel/framework": "^5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hammock\\LaravelERPNext\\": "src"
+        }
+    },
+    "extra": {
+    "laravel": {
+      "providers": [
+        "Hammock\\LaravelERPNext\\ERPNextServiceProvider"
+      ],
+      "aliases": {
+        "ERPNext": "Hammock\\LaravelERPNext\\Facades\\ERPNext"
+      }
+    }
+  }
+}
