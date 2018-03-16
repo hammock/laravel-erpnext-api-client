@@ -2,9 +2,9 @@
 
 namespace Hammock\LaravelERPNext;
 
+use Curl\Curl;
 use Hammock\LaravelERPNext\Configuration\ConfigurationInterface;
 use Hammock\LaravelERPNext\Exception\AuthorizationException;
-use Curl\Curl;
 
 /**
  * Class ERPNextClient
@@ -29,18 +29,27 @@ class ERPNextClient
     protected $curl;
 
     /**
+     * @var array
+     */
+    protected $cookies = [];
+
+    /**
      * @param ConfigurationInterface $config
      * @throws \ErrorException
      */
     public function __construct(ConfigurationInterface $config)
     {
         $this->curl = new Curl(rtrim($config->getDomain(), '/\\ '));
+        $this->curl->setJsonDecoder(function ($response) {
+            return json_decode($response, true, 512, JSON_ERROR_NONE);
+        });
         $this->user = $config->getUser();
         $this->password = $config->getPassword();
     }
 
     /**
      * @return bool
+     * @throws AuthorizationException
      */
     public function authenticate(): bool
     {
@@ -51,7 +60,22 @@ class ERPNextClient
 
         $this->curl->post('/api/method/login', $query);
 
-        return $this->curl->error;
+        if ($this->curl->error) {
+            throw new AuthorizationException('Failed to authenticate with credentials provided.');
+        }
+
+        $this->cookies = $this->curl->getResponseCookies();
+        $this->curl->setCookies($this->cookies);
+
+        return $this->curl->response;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCookies(): array
+    {
+        return $this->cookies;
     }
 
     /**
@@ -82,10 +106,10 @@ class ERPNextClient
 
         $this->curl->get('/api/resource/' . $resourceName, $query);
 
-        if ($this->curl->httpStatusCode !== 200 || array_key_exists('data', $this->curl->response)) {
+        if ($this->curl->error) {
             return [];
         }
 
-        return $this->curl->response['data'];
+        return $this->curl->response['data'] ?? [];
     }
 }
