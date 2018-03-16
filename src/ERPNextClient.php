@@ -48,10 +48,10 @@ class ERPNextClient
     }
 
     /**
-     * @return bool
+     * @return array|null
      * @throws AuthorizationException
      */
-    public function authenticate(): bool
+    public function authenticate()
     {
         $query = [
             'usr' => $this->user,
