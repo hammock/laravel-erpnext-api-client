@@ -2,6 +2,11 @@
 
 namespace Hammock\LaravelERPNext\Configuration;
 
+/**
+ * Class AbstractConfiguration
+ *
+ * @package Hammock\LaravelERPNext\Configuration
+ */
 abstract class AbstractConfiguration implements ConfigurationInterface
 {
     /**

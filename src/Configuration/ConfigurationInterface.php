@@ -3,7 +3,9 @@
 namespace Hammock\LaravelERPNext\Configuration;
 
 /**
- * @package Hammock\ERPnext\Configuration
+ * Interface ConfigurationInterface
+ *
+ * @package Hammock\LaravelERPNext\Configuration
  */
 interface ConfigurationInterface
 {

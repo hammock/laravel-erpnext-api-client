@@ -4,8 +4,9 @@ namespace Hammock\LaravelERPNext;
 
 use Illuminate\Support\ServiceProvider;
 use Hammock\LaravelERPNext\Configuration\ConfigurationInterface;
+use Hammock\LaravelERPNext\Configuration\LaravelConfiguration;
 
-class ERPNextServiceProvider extends ERPNextServiceProvider
+class ERPNextServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
