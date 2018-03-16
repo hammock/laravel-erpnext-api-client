@@ -31,9 +31,9 @@ class ERPNextServiceProvider extends ServiceProvider
         $this->app->bind(ConfigurationInterface::class, function () {
             return new LaravelConfiguration();
         });
-        $this->app->bind('Hammock\LaravelERPNext\ERPNextClient', function () {
-            return $this->app->make(ERPNextClient::class);
+        $this->app->bind(ERPNextClient::class, function () {
+            return new ERPNextClient($this->app->make(ConfigurationInterface::class));
         });
-        $this->app->alias('Hammock\LaravelERPNext\ERPNextClient', 'erpnext');
+        $this->app->alias(ERPNextClient::class, 'erpnext');
     }
 }
