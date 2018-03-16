@@ -98,11 +98,17 @@ class ERPNextClient
     public function getResource(string $resourceName, array $fields = [], array $filters = [], int $limitStart = 0, int $limitLength = 20): array
     {
         $query = [
-            'filters' => $filters,
-            'fields' => $fields,
             'limit_start' => $limitStart,
             'limit_page_length' => $limitLength
         ];
+
+        if (!empty($fields)) {
+            $query['fields'] = json_encode($fields);
+        }
+
+        if (!empty($filters)) {
+            $query['filters'] = json_encode($filters);
+        }
 
         $this->curl->get('/api/resource/' . $resourceName, $query);
 
