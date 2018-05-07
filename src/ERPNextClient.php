@@ -34,12 +34,27 @@ class ERPNextClient
     protected $cookies = [];
 
     /**
+     * @var string
+     */
+    protected $baseUrl;
+
+    /**
+     * @return void
+     */
+    protected function resetBaseUrl(): void
+    {
+        $this->curl->url = null;
+        $this->curl->setUrl($this->baseUrl);
+    }
+
+    /**
      * @param ConfigurationInterface $config
      * @throws \ErrorException
      */
     public function __construct(ConfigurationInterface $config)
     {
-        $this->curl = new Curl(rtrim($config->getDomain(), '/\\ '));
+        $this->baseUrl = rtrim($config->getDomain(), '/\\ ');
+        $this->curl = new Curl($this->baseUrl);
         $this->curl->setJsonDecoder(function ($response) {
             return json_decode($response, true, 512, JSON_ERROR_NONE);
         });
@@ -58,6 +73,7 @@ class ERPNextClient
             'pwd' => $this->password
         ];
 
+        $this->resetBaseUrl();
         $this->curl->post('/api/method/login', $query);
 
         if ($this->curl->error) {
@@ -83,6 +99,7 @@ class ERPNextClient
      */
     public function isAuthenticated(): bool
     {
+        $this->resetBaseUrl();
         $this->curl->get('/api/method/frappe.auth.get_logged_user');
         return $this->curl->httpStatusCode === 200;
     }
@@ -110,6 +127,7 @@ class ERPNextClient
             $query['filters'] = json_encode($filters);
         }
 
+        $this->resetBaseUrl();
         $this->curl->get('/api/resource/' . $resourceName, $query);
 
         if ($this->curl->error) {
@@ -117,5 +135,57 @@ class ERPNextClient
         }
 
         return $this->curl->response['data'] ?? [];
+    }
+
+    /**
+     * @param string $resourceName
+     * @param array $fields
+     * @return array
+     */
+    public function createResource(string $resourceName, array $data = []): array
+    {
+        $this->resetBaseUrl();
+        $this->curl->post('/api/resource/' . $resourceName, 'data=' . json_encode($data));
+
+        if ($this->curl->error) {
+            return [];
+        }
+
+        return $this->curl->response['data'] ?? [];
+    }
+
+    /**
+     * @param string $resourceName
+     * @param string $name
+     * @param array $fields
+     * @return array
+     */
+    public function updateResource(string $resourceName, string $name, array $data = []): array
+    {
+        $this->resetBaseUrl();
+        $this->curl->put('/api/resource/' . $resourceName . '/' . $name, 'data=' . json_encode($data));
+
+        if ($this->curl->error) {
+            return [];
+        }
+
+        return $this->curl->response['data'] ?? [];
+    }
+
+    /**
+     * @param string $resourceName
+     * @param string $name
+     * @return bool
+     */
+    public function deleteResource(string $resourceName, string $name): bool
+    {
+        $this->resetBaseUrl();
+        $this->curl->delete('/api/resource/' . $resourceName . '/' . $name);
+
+        if ($this->curl->error) {
+            return false;
+        }
+
+        return ($this->curl->response['message'] ?? null) === 'ok';
     }
 }
