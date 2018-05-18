@@ -15,7 +15,7 @@
     }
   ],
   "require": {
-    "php": "^7.0",
+    "php": "^7.1",
     "laravel/framework": "^5.3",
     "php-curl-class/php-curl-class": "^8.0"
   },

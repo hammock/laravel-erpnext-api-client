@@ -55,6 +55,7 @@ class ERPNextClient
     {
         $this->baseUrl = rtrim($config->getDomain(), '/\\ ');
         $this->curl = new Curl($this->baseUrl);
+        $this->curl->setHeader('Accept', 'application/json');
         $this->curl->setJsonDecoder(function ($response) {
             return json_decode($response, true, 512, JSON_ERROR_NONE);
         });
@@ -66,7 +67,7 @@ class ERPNextClient
      * @return array|null
      * @throws AuthorizationException
      */
-    public function authenticate()
+    public function authenticate(): ?array
     {
         $query = [
             'usr' => $this->user,
@@ -92,6 +93,14 @@ class ERPNextClient
     public function getCookies(): array
     {
         return $this->cookies;
+    }
+
+    /**
+     * @return Curl
+     */
+    public function getCurlInstance(): Curl
+    {
+        return $this->curl;
     }
 
     /**
